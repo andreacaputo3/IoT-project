@@ -6,12 +6,13 @@ module.exports = async function(callback) {
         const contractInstance = await TransportContract.deployed();
 
         // Definisci i parametri per il nuovo trasporto
-        const transportId = 1;
-        const departurePlace = "New York";
-        const arrivalPlace = "Los Angeles";
+        const transportId = 2;
+        const departurePlace = "York";
+        const arrivalPlace = "Los";
+        const transportState = "In spedizione";
 
         // Aggiungi il trasporto utilizzando la funzione addTransport del contratto
-        await contractInstance.addTransport(departurePlace, arrivalPlace,1);
+        await contractInstance.addTransport(departurePlace, arrivalPlace, transportState, 1);
 
         // Ottieni i dettagli del trasporto appena aggiunto
         const transport = await contractInstance.transports(transportId);
@@ -20,6 +21,7 @@ module.exports = async function(callback) {
         console.log("Transport ID:", transport.transportId.toNumber());
         console.log("Departure Place:", transport.departurePlace);
         console.log("Arrival Place:", transport.arrivalPlace);
+        console.log("State:", transport.transportState);
     } catch (error) {
         console.error("Error:", error);
     }

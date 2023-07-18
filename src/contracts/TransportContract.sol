@@ -14,9 +14,8 @@ contract TransportContract {
         uint productId;
     }
 
-    function addTransport(string memory _departurePlace, string memory _arrivalPlace, uint _productId) public {
+    function addTransport(string memory _departurePlace, string memory _arrivalPlace, string memory transportState, uint _productId) public {
         transportCount ++;
-        string memory transportState = "In spedizione";
         transports[transportCount] = Transport(
             transportCount,
             _departurePlace,
