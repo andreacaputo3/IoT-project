@@ -6,9 +6,9 @@ module.exports = async function(callback) {
         const contractInstance = await TransportContract.deployed();
 
         // Definisci i parametri per il nuovo trasporto
-        const transportId = 2;
-        const departurePlace = "York";
-        const arrivalPlace = "Los";
+        const transportId = 1;
+        const departurePlace = "New York";
+        const arrivalPlace = "Los Angeles";
         const transportState = "In spedizione";
 
         // Aggiungi il trasporto utilizzando la funzione addTransport del contratto

@@ -20,4 +20,24 @@ contract CourierContract {
         couriers[courierCount] = Courier(courierCount, _name, _surname, _email, _transportId);
         emit CourierAdded(_name, _surname, _email, _transportId);
     }
+
+    function getCourierByTransportId(uint _transportId) public view returns (
+        uint courierId,
+        string memory name,
+        string memory surname,
+        string memory email,
+        uint transportId
+    ) {
+        // Make sure the transport has a valid id
+        require(_transportId > 0, "Invalid transport ID");
+
+        Courier memory _courier = couriers[_transportId];
+        return (
+            _courier.courierId,
+            _courier.name,
+            _courier.surname,
+            _courier.email,
+            _courier.transportId
+        );
+    }
 }

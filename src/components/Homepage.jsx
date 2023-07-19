@@ -6,11 +6,13 @@ import Row from 'react-bootstrap/Row';
 import Web3 from 'web3';
 import TransportContract from '../abis/TransportContract.json';
 import AcquisitionContract from '../abis/AcquisitionContract.json';
+import CourierContract from '../abis/CourierContract.json';
 
 const HomePage = () => {
   const [validated, setValidated] = useState(false);
   const [transportData, setTransportData] = useState(null);
   const [acquisitionData, setAcquisitionData] = useState([]);
+  const [courierData, setCourierData] = useState(null);
   const [error, setError] = useState(null);
 
   const handleSubmit = async (event) => {
@@ -38,37 +40,26 @@ const HomePage = () => {
             AcquisitionContract.abi,
             AcquisitionContract.networks[networkId].address
           );
+          const courierContract = new web3.eth.Contract(
+            CourierContract.abi,
+            CourierContract.networks[networkId].address
+          );
 
           const transportData = await transportContract.methods.getTransportByID(transportId).call();
           const acquisitionData = await acquisitionContract.methods.getAcquisitionsByTransportId(transportId).call();
-
-          console.log('Transport data:', transportData.departurePlace);
-          console.log('Transport data:', transportData.arrivalPlace);
-          console.log('Transport data:', transportData.transportState);
-
-          console.log(acquisitionData);
-
-          const data = new Date(acquisitionData[0].datetime.toNumber() * 1000).toString();
-          console.log('Acquisition data:', data);
-          console.log('Acquisition data:', acquisitionData[0].registeredTemperature.toString());
-          console.log('Acquisition data:', acquisitionData[0].hasProblems);
-
-          const data2 = new Date(acquisitionData[1].datetime.toNumber() * 1000).toString();
-          console.log('Acquisition data:', data2);
-          console.log('Acquisition data:', acquisitionData[1].registeredTemperature.toString());
-          console.log('Acquisition data:', acquisitionData[1].hasProblems);
-
-          
+          const courierData = await courierContract.methods.getCourierByTransportId(transportId).call();
 
           // Imposta i dati del trasporto e delle acquisizioni nello stato
           setTransportData(transportData);
           setAcquisitionData(acquisitionData);
+          setCourierData(courierData);
           setError(null);
         }
       } catch (error) {
-        console.error('Error reading transport data from blockchain:', error);
+        console.error('Error reading data from blockchain:', error);
         setTransportData(null);
         setAcquisitionData([]);
+        setCourierData(null);
         setError('Errore nella lettura dei dati dalla blockchain');
       }
     }
@@ -77,63 +68,113 @@ const HomePage = () => {
 
   return (
     <div className="homepage">
-      <h1>Benvenuto nella nostra homepage!</h1>
+      <div className="container">
+        <h1 className="text-center mt-4">Benvenuto nella nostra homepage!</h1>
 
-      <Form noValidate validated={validated} onSubmit={handleSubmit}>
-        <Row className="mb-3">
-          <Form.Group as={Col} md="4" controlId="validationCustom01">
-            <Form.Label>
-              Inserisci l'identificativo del trasporto che vuoi visionare
-            </Form.Label>
-            <Form.Control required type="text" name="transportId" placeholder="TransportId" />
-            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-          </Form.Group>
-        </Row>
-        <Button type="submit">Submit form</Button>
+        <Form noValidate validated={validated} onSubmit={handleSubmit}>
+          <Row className="justify-content-center mt-5">
+            <Col md={5}>
+              <Form.Group controlId="validationCustom01">
+                <Form.Label>
+                  Inserisci l'identificativo del trasporto che vuoi visionare
+                </Form.Label>
+                <Form.Control required type="text" name="transportId" placeholder="TransportId" />
+                <Form.Control.Feedback type="invalid">
+                  Inserisci un identificativo valido.
+                </Form.Control.Feedback>
+              </Form.Group>
+            </Col>
+          </Row>
+          <div className="text-center mt-4">
+            <Button type="submit" variant="primary">Submit form</Button>
+          </div>
+        </Form>
 
         {transportData && (
-          <div className="transport-details">
-            <h2>Dati del Trasporto</h2>
-            <p>Departure Place: {transportData.departurePlace}</p>
-            <p>Arrival Place: {transportData.arrivalPlace}</p>
-            <p>State: {transportData.transportState}</p>
+          <div className="transport-details mt-4">
+            <h2 className="text-center">Dati del Trasporto</h2>
+            <div className="card">
+              <div className="card-body">
+                <p className="card-text">
+                  <strong>Departure Place:</strong> {transportData.departurePlace}
+                </p>
+                <p className="card-text">
+                  <strong>Arrival Place:</strong> {transportData.arrivalPlace}
+                </p>
+                <p className="card-text">
+                  <strong>State:</strong> {transportData.transportState}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {courierData && (
+          <div className="courier-details mt-4">
+            <h2 className="text-center">Corriere Incaricato del Trasporto</h2>
+            <div className="card">
+              <div className="card-body">
+                <p className="card-text">
+                  <strong>Nome:</strong> {courierData.name}
+                </p>
+                <p className="card-text">
+                  <strong>Cognome:</strong> {courierData.surname}
+                </p>
+                <p className="card-text">
+                  <strong>Email:</strong> {courierData.email}
+                </p>
+              </div>
+            </div>
           </div>
         )}
 
         {acquisitionData.length > 0 && (
-          <div className="acquisition-details">
-            <h2>Acquisizioni associate</h2>
-            {acquisitionData.map((acquisition) => (
-              <div key={acquisition.acquisitionId.toNumber()} className="acquisition">
-                <p>Datetime: {new Date(acquisition.datetime * 1000).toLocaleString()}</p>
-                <p>Registered Temperature: {acquisition.registeredTemperature.toNumber()}</p>
-                <p>Has Problems: {acquisition.hasProblems ? 'Yes' : 'No'}</p>
-              </div>
-            ))}
+          <div className="acquisition-details mt-4">
+            <h2 className="text-center">Acquisizioni associate</h2>
+            <div>
+              {acquisitionData.map((acquisition) => (
+                <div key={acquisition.acquisitionId} className="card mb-3">
+                  <div className="card-body d-flex flex-wrap">
+                    <div className="mx-3">
+                      <strong>Datetime:</strong> {new Date(acquisition.datetime * 1000).toLocaleString()}
+                    </div>
+                    <div className="mx-3">
+                      <strong>Registered Temperature:</strong> {acquisition.registeredTemperature.toLocaleString()}
+                    </div>
+                    <div className="mx-3">
+                      <strong>Registered Humidity:</strong> {acquisition.registeredHumidity.toLocaleString()}
+                    </div>
+                    <div>
+                      <strong>Has Problems:</strong> {acquisition.hasProblems ? 'Yes' : 'No'}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
-        {error && <p>{error}</p>}
-      </Form>
+         {error && <p>{error}</p>}
 
-      <style jsx>{`
-        .transport-details {
-          margin-top: 20px;
-          margin-bottom: 10px;
-          padding: 10px;
-          border: 1px solid #ccc;
-          border-radius: 5px;
+      </div>
+
+      <style jsx="true">{`
+        .homepage {
+          padding: 40px 0;
+          background-color: #f8f9fa;
         }
 
-        .acquisition-details {
-          margin-top: 40px;
+        .transport-details,
+        .acquisition-details,
+        .courier-details {
+          background-color: #fff;
+          border-radius: 5px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          padding: 20px;
         }
 
-        .acquisition {
-          margin-bottom: 10px;
-          padding: 10px;
-          border: 1px solid #ccc;
-          border-radius: 5px;
+        .card-group .card {
+          margin-bottom: 20px;
         }
       `}</style>
     </div>
