@@ -7,12 +7,15 @@ import Web3 from 'web3';
 import TransportContract from '../abis/TransportContract.json';
 import AcquisitionContract from '../abis/AcquisitionContract.json';
 import CourierContract from '../abis/CourierContract.json';
+import ProductContract from '../abis/ProductContract.json';
+
 
 const HomePage = () => {
   const [validated, setValidated] = useState(false);
   const [transportData, setTransportData] = useState(null);
   const [acquisitionData, setAcquisitionData] = useState([]);
   const [courierData, setCourierData] = useState(null);
+  const [productData, setProductData] = useState(null);
   const [error, setError] = useState(null);
 
   const handleSubmit = async (event) => {
@@ -44,15 +47,22 @@ const HomePage = () => {
             CourierContract.abi,
             CourierContract.networks[networkId].address
           );
+          const productContract = new web3.eth.Contract(
+            ProductContract.abi,
+            ProductContract.networks[networkId].address
+          );
 
           const transportData = await transportContract.methods.getTransportByID(transportId).call();
           const acquisitionData = await acquisitionContract.methods.getAcquisitionsByTransportId(transportId).call();
           const courierData = await courierContract.methods.getCourierByTransportId(transportId).call();
+          const productId = transportData.productId;
+          const productData = await productContract.methods.getProductById(productId).call();
 
           // Imposta i dati del trasporto e delle acquisizioni nello stato
           setTransportData(transportData);
           setAcquisitionData(acquisitionData);
           setCourierData(courierData);
+          setProductData(productData);
           setError(null);
         }
       } catch (error) {
@@ -60,6 +70,7 @@ const HomePage = () => {
         setTransportData(null);
         setAcquisitionData([]);
         setCourierData(null);
+        setProductData(null);
         setError('Errore nella lettura dei dati dalla blockchain');
       }
     }
@@ -109,21 +120,38 @@ const HomePage = () => {
           </div>
         )}
 
-        {courierData && (
-          <div className="courier-details mt-4">
-            <h2 className="text-center">Corriere Incaricato del Trasporto</h2>
+        {productData && (
+          <div className="product-details mt-4">
+            <h2 className="text-center">Prodotto Trasportato</h2>
             <div className="card">
               <div className="card-body">
                 <p className="card-text">
-                  <strong>Nome:</strong> {courierData.name}
+                  <strong>Product Type:</strong> {productData[0]}
                 </p>
                 <p className="card-text">
-                  <strong>Cognome:</strong> {courierData.surname}
+                  <strong>Ideal Temperature:</strong> {productData[1].toLocaleString()}
                 </p>
                 <p className="card-text">
-                  <strong>Email:</strong> {courierData.email}
+                  <strong>Ideal Humidity:</strong> {productData[2].toLocaleString()}
                 </p>
               </div>
+            </div>
+          </div>
+        )}
+
+        {courierData && courierData.name !== "" &&  (
+          <div className="courier-details mt-4">
+            <h2 className="text-center">Corriere Incaricato del Trasporto</h2>
+            <div className="card p-4">
+              <p className="card-text mb-2">
+                <strong>Nome:</strong> {courierData.name}
+              </p>
+              <p className="card-text mb-2">
+                <strong>Cognome:</strong> {courierData.surname}
+              </p>
+              <p className="card-text">
+                <strong>Email:</strong> {courierData.email}
+              </p>
             </div>
           </div>
         )}
@@ -166,7 +194,8 @@ const HomePage = () => {
 
         .transport-details,
         .acquisition-details,
-        .courier-details {
+        .courier-details,
+        .product-details {
           background-color: #fff;
           border-radius: 5px;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

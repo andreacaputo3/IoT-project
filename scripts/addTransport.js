@@ -10,6 +10,8 @@ module.exports = async function(callback) {
         const departurePlace = "New York";
         const arrivalPlace = "Los Angeles";
         const transportState = "In spedizione";
+        const productId = 1;
+
 
         // Aggiungi il trasporto utilizzando la funzione addTransport del contratto
         await contractInstance.addTransport(departurePlace, arrivalPlace, transportState, 1);

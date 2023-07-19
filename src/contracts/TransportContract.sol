@@ -11,7 +11,7 @@ contract TransportContract {
         string departurePlace;
         string arrivalPlace;
         string transportState;
-        uint productId;
+        uint productId; //un prodotto a trasporto ma si può ripetere nei trasporti
     }
 
     function addTransport(string memory _departurePlace, string memory _arrivalPlace, string memory transportState, uint _productId) public {
