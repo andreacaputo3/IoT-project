@@ -7,9 +7,9 @@ module.exports = async function(callback) {
 
         // Definisci i parametri per il nuovo prodotto
         const productId = 1;
-        const productType = "Pane";
-        const idealTemperature = 25;
-        const idealHumidity = 40;
+        const productType = "Patate";
+        const idealTemperature = 30;
+        const idealHumidity = 50;
 
         // Aggiungi il prodotto utilizzando la funzione addProduct del contratto
         await contractInstance.addProduct(productType, idealTemperature, idealHumidity);

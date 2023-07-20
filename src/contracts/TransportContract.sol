@@ -16,32 +16,28 @@ contract TransportContract {
 
     function addTransport(string memory _departurePlace, string memory _arrivalPlace, uint _productId) public {
         transportCount ++;
-        transportState = "In spedizione"
+        string memory _transportState = "Pronto alla spedizione";
         transports[transportCount] = Transport(
             transportCount,
             _departurePlace,
             _arrivalPlace,
-            transportState,
+            _transportState,
             _productId
         );
     }
 
     function updateTransportStateShipped(uint transportId) public {
-        for (uint i = 0; i < transports.length; i++) {
-            if (transports[i].transportId == transportId) {
-                transports[i].transportState = "Spedito";
-                break;
-            }
-        }
+        require(transportId <= transportCount, "ID trasporto non valido");
+
+        Transport storage transport = transports[transportId];
+        transport.transportState = "Spedito";
     }
 
     function updateTransportStateDelivered(uint transportId) public {
-        for (uint i = 0; i < transports.length; i++) {
-            if (transports[i].transportId == transportId) {
-                transports[i].transportState = "Consegnato";
-                break;
-            }
-        }
+        require(transportId <= transportCount, "ID trasporto non valido");
+
+        Transport storage transport = transports[transportId];
+        transport.transportState = "Consegnato";
     }
 
     function getTransportByID(uint _transportId) public view returns (

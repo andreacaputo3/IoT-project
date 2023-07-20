@@ -7,8 +7,8 @@ module.exports = async function(callback) {
 
         // Definisci i parametri per il nuovo trasporto
         const transportId = 1;
-        const departurePlace = "New York";
-        const arrivalPlace = "Los Angeles";
+        const departurePlace = "Roma";
+        const arrivalPlace = "Milano";
         const productId = 1;
 
 

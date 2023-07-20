@@ -40,8 +40,7 @@ def client_program():
     transportId = input("Inserisci il trasporto per cui fare acquisizioni: ")
     transportData = transportContract.functions.getTransportByID(int(transportId)).call()
     productId = transportData[4]
-    print(productId)
-    transportContract.functions.updateTransportStateShipped(transportId).transact({'from': web3.eth.defaultAccount})
+    transportContract.functions.updateTransportStateShipped(int(transportId)).transact({'from': web3.eth.defaultAccount})
     print("Trasporto spedito")
     deployed_contract_address_product = web3_utils.get_contract_address_from_json(compiled_contract_path_product, network_id)
     productContract = web3_utils.get_contract_instance(compiled_contract_path_product, deployed_contract_address_product, web3)
@@ -70,15 +69,18 @@ def client_program():
             hasProblems = isThereAProblem(productData[1],registeredTemperature)
             hasProblems = isThereAProblem(productData[2],registeredHumidity)
 
-            tx_hash = contract.functions.addAcquisition(ts,registeredTemperature,registeredHumidity,hasProblems,
-            transportId).transact({'from': web3.eth.defaultAccount})
+            deployed_contract_address_acquisition = web3_utils.get_contract_address_from_json(compiled_contract_path_acquisition, network_id)
+            acquisitionContract = web3_utils.get_contract_instance(compiled_contract_path_acquisition, deployed_contract_address_acquisition, web3)
+
+            tx_hash = acquisitionContract.functions.addAcquisition(ts,registeredTemperature,registeredHumidity,hasProblems,
+            int(transportId)).transact({'from': web3.eth.defaultAccount})
             print("Transaction Hash:", tx_hash)
 
             client_socket.close()  # Chiusura della connessione
             time.sleep(10)
 
         except KeyboardInterrupt:
-            transportContract.functions.updateTransportStateDelivered(transportId).transact({'from': web3.eth.defaultAccount})
+            transportContract.functions.updateTransportStateDelivered(int(transportId)).transact({'from': web3.eth.defaultAccount})
             print("\nIl trasporto è stato consegnato")
             sys.exit()
 
