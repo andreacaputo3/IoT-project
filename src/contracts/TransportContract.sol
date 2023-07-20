@@ -14,8 +14,9 @@ contract TransportContract {
         uint productId; //un prodotto a trasporto ma si può ripetere nei trasporti
     }
 
-    function addTransport(string memory _departurePlace, string memory _arrivalPlace, string memory transportState, uint _productId) public {
+    function addTransport(string memory _departurePlace, string memory _arrivalPlace, uint _productId) public {
         transportCount ++;
+        transportState = "In spedizione"
         transports[transportCount] = Transport(
             transportCount,
             _departurePlace,
@@ -23,6 +24,24 @@ contract TransportContract {
             transportState,
             _productId
         );
+    }
+
+    function updateTransportStateShipped(uint transportId) public {
+        for (uint i = 0; i < transports.length; i++) {
+            if (transports[i].transportId == transportId) {
+                transports[i].transportState = "Spedito";
+                break;
+            }
+        }
+    }
+
+    function updateTransportStateDelivered(uint transportId) public {
+        for (uint i = 0; i < transports.length; i++) {
+            if (transports[i].transportId == transportId) {
+                transports[i].transportState = "Consegnato";
+                break;
+            }
+        }
     }
 
     function getTransportByID(uint _transportId) public view returns (
