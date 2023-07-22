@@ -7,7 +7,7 @@ import time
 def isThereAProblem(ideal, detected):
     upper = ideal + (ideal*0.1)
     lower = ideal - (ideal*0.1)
-    print("{0} - {1}".format(upper, lower))
+    #print("{0} - {1}".format(upper, lower))
     if (detected < lower or detected > upper):
         return True
     else:
@@ -15,7 +15,7 @@ def isThereAProblem(ideal, detected):
 
 def client_program():
     host = '192.168.1.51'  # Indirizzo IP del server o 'localhost' se il server è in esecuzione sulla stessa macchina
-    port = 5003  # Porta utilizzata dal server
+    port = 5003  
 
     #Indirizzo del provider (es. Ganache)
     blockchain_address = 'http://localhost:7545'
@@ -29,21 +29,20 @@ def client_program():
     # Ottieni l'identificatore di rete
     network_id = web3_utils.get_network_id(web3)
 
-    # Path al file JSON compilato del contratto
+    # Creazione delle istanze dei contratti
     compiled_contract_path_acquisition = '../src/abis/AcquisitionContract.json'
     compiled_contract_path_product = '../src/abis/ProductContract.json'
     compiled_contract_path_transport = '../src/abis/TransportContract.json'
 
-    deployed_contract_address_transport = web3_utils.get_contract_address_from_json(compiled_contract_path_transport, network_id)
-    transportContract = web3_utils.get_contract_instance(compiled_contract_path_transport, deployed_contract_address_transport, web3)
+    acquisitionContract = web3_utils.get_contract_instance(compiled_contract_path_acquisition, network_id, web3)
+    productContract = web3_utils.get_contract_instance(compiled_contract_path_product, network_id, web3)
+    transportContract = web3_utils.get_contract_instance(compiled_contract_path_transport, network_id, web3)
 
     transportId = input("Inserisci il trasporto per cui fare acquisizioni: ")
     transportData = transportContract.functions.getTransportByID(int(transportId)).call()
     productId = transportData[4]
     transportContract.functions.updateTransportStateShipped(int(transportId)).transact({'from': web3.eth.defaultAccount})
     print("Trasporto spedito")
-    deployed_contract_address_product = web3_utils.get_contract_address_from_json(compiled_contract_path_product, network_id)
-    productContract = web3_utils.get_contract_instance(compiled_contract_path_product, deployed_contract_address_product, web3)
     productData = productContract.functions.getProductById(productId).call()
    
 
@@ -57,8 +56,6 @@ def client_program():
             #dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
             #print("now =", dt_string)
             ts = int(datetime.timestamp(now))
-            print(ts)
-            print(f"Risposta dal server: {data}")
 
             # Utilizzo di split() per separare la stringa sulla base delle graffe
             data_list = data.split('-')
@@ -66,18 +63,18 @@ def client_program():
             # Estrazione dei valori tra graffe e rimozione di spazi bianchi
             registeredTemperature = int(data_list[0])
             registeredHumidity = int(data_list[1])
+            print(f"Temperatura registrata: {registeredTemperature} °C")
+            print(f"Umidità registrata: {registeredHumidity} %")
+
             hasProblems = isThereAProblem(productData[1],registeredTemperature)
             hasProblems = isThereAProblem(productData[2],registeredHumidity)
 
-            deployed_contract_address_acquisition = web3_utils.get_contract_address_from_json(compiled_contract_path_acquisition, network_id)
-            acquisitionContract = web3_utils.get_contract_instance(compiled_contract_path_acquisition, deployed_contract_address_acquisition, web3)
-
             tx_hash = acquisitionContract.functions.addAcquisition(ts,registeredTemperature,registeredHumidity,hasProblems,
             int(transportId)).transact({'from': web3.eth.defaultAccount})
-            print("Transaction Hash:", tx_hash)
+            print("Dati memorizzati...")
 
             client_socket.close()  # Chiusura della connessione
-            time.sleep(10)
+            time.sleep(60)
 
         except KeyboardInterrupt:
             transportContract.functions.updateTransportStateDelivered(int(transportId)).transact({'from': web3.eth.defaultAccount})

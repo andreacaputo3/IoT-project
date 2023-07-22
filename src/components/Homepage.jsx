@@ -80,16 +80,16 @@ const HomePage = () => {
   return (
     <div className="homepage">
       <div className="container">
-        <h1 className="text-center mt-4">Benvenuto nella nostra homepage!</h1>
+        <h1 className="text-center mt-4">Benvenuto nella sezione dedicata alle spedizioni</h1>
 
         <Form noValidate validated={validated} onSubmit={handleSubmit}>
-          <Row className="justify-content-center mt-5">
+          <Row className="justify-content-center mt-4">
             <Col md={5}>
               <Form.Group controlId="validationCustom01">
-                <Form.Label>
-                  Inserisci l'identificativo del trasporto che vuoi visionare
+                <Form.Label className="ml-2">
+                  <strong>Inserisci l'identificativo del trasporto che vuoi visionare</strong>
                 </Form.Label>
-                <Form.Control required type="text" name="transportId" placeholder="TransportId" />
+                <Form.Control required type="text" name="transportId" placeholder="Identificativo" />
                 <Form.Control.Feedback type="invalid">
                   Inserisci un identificativo valido.
                 </Form.Control.Feedback>
@@ -97,7 +97,7 @@ const HomePage = () => {
             </Col>
           </Row>
           <div className="text-center mt-4">
-            <Button type="submit" variant="primary">Submit form</Button>
+            <Button type="submit" variant="primary">Cerca</Button>
           </div>
         </Form>
 
@@ -107,13 +107,13 @@ const HomePage = () => {
             <div className="card">
               <div className="card-body">
                 <p className="card-text">
-                  <strong>Departure Place:</strong> {transportData.departurePlace}
+                  <strong>Luogo di partenza:</strong> {transportData.departurePlace}
                 </p>
                 <p className="card-text">
-                  <strong>Arrival Place:</strong> {transportData.arrivalPlace}
+                  <strong>Luogo di arrivo:</strong> {transportData.arrivalPlace}
                 </p>
                 <p className="card-text">
-                  <strong>State:</strong> {transportData.transportState}
+                  <strong>Stato del trasporto:</strong> {transportData.transportState}
                 </p>
               </div>
             </div>
@@ -126,13 +126,13 @@ const HomePage = () => {
             <div className="card">
               <div className="card-body">
                 <p className="card-text">
-                  <strong>Product Type:</strong> {productData[0]}
+                  <strong>Tipologia:</strong> {productData[0]}
                 </p>
                 <p className="card-text">
-                  <strong>Ideal Temperature:</strong> {productData[1].toLocaleString()}
+                  <strong>Temperatura ideale di conservazione:</strong> {productData[1].toLocaleString()}
                 </p>
                 <p className="card-text">
-                  <strong>Ideal Humidity:</strong> {productData[2].toLocaleString()}
+                  <strong>Umidità ideale di conservazione:</strong> {productData[2].toLocaleString()}
                 </p>
               </div>
             </div>
@@ -164,16 +164,16 @@ const HomePage = () => {
                 <div key={acquisition.acquisitionId} className="card mb-3">
                   <div className="card-body d-flex flex-wrap">
                     <div className="mx-3">
-                      <strong>Datetime:</strong> {new Date(acquisition.datetime * 1000).toLocaleString()}
+                      <strong>Data rilevazione:</strong> {new Date(acquisition.datetime * 1000).toLocaleString()}
                     </div>
                     <div className="mx-3">
-                      <strong>Registered Temperature:</strong> {acquisition.registeredTemperature.toLocaleString()}
+                      <strong>Temperatura registrata:</strong> {acquisition.registeredTemperature.toLocaleString()}
                     </div>
                     <div className="mx-3">
-                      <strong>Registered Humidity:</strong> {acquisition.registeredHumidity.toLocaleString()}
+                      <strong>Umidità registrata:</strong> {acquisition.registeredHumidity.toLocaleString()}
                     </div>
                     <div>
-                      <strong>Has Problems:</strong> {acquisition.hasProblems ? 'Yes' : 'No'}
+                      <strong>Problemi durante il trasporto:</strong> {acquisition.hasProblems ? 'Yes' : 'No'}
                     </div>
                   </div>
                 </div>
@@ -187,8 +187,9 @@ const HomePage = () => {
       </div>
 
       <style jsx="true">{`
-        .homepage {
-          padding: 40px 0;
+        .homepage,
+        .container {
+          padding: 130px 0;
           background-color: #f8f9fa;
         }
 

@@ -28,23 +28,6 @@ contract AcquisitionContract {
         );
     }
 
-    function updateTemperature(uint _acquisitionId, uint _registeredTemperature) 
-    public {
-        require(_acquisitionId > 0 && _acquisitionId <= acquisitionCount, "Invalid acquisition ID");
-        acquisitions[_acquisitionId].registeredTemperature = _registeredTemperature;
-    }
-
-    function updateHumidity(uint _acquisitionId, uint _registeredHumidity) 
-    public {
-        require(_acquisitionId > 0 && _acquisitionId <= acquisitionCount, "Invalid acquisition ID");
-        acquisitions[_acquisitionId].registeredHumidity = _registeredHumidity;
-    }
-
-    function updateProblems(uint _acquisitionId, bool _hasProblems) public {
-        require(_acquisitionId > 0 && _acquisitionId <= acquisitionCount, "Invalid transport ID");
-        acquisitions[_acquisitionId].hasProblems = _hasProblems;
-    }
-
     function getAcquisitionsByTransportId(uint _transportId) public view returns (Acquisition[] memory) {
         require(_transportId > 0, "Invalid transport ID");
 

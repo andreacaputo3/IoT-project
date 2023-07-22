@@ -8,7 +8,8 @@ def get_contract_address_from_json(json_path, network_id):
     return contract_data['networks'][str(network_id)]['address']
 
 # Funzione per ottenere un'istanza del contratto
-def get_contract_instance(contract_path, contract_address, web3):
+def get_contract_instance(contract_path, network_id, web3):
+    contract_address = get_contract_address_from_json(contract_path, network_id)
     with open(contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
