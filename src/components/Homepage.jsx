@@ -129,10 +129,10 @@ const HomePage = () => {
                   <strong>Tipologia:</strong> {productData[0]}
                 </p>
                 <p className="card-text">
-                  <strong>Temperatura ideale di conservazione:</strong> {productData[1].toLocaleString()}
+                  <strong>Temperatura ideale di conservazione:</strong> {productData[1].toLocaleString()} °C
                 </p>
                 <p className="card-text">
-                  <strong>Umidità ideale di conservazione:</strong> {productData[2].toLocaleString()}
+                  <strong>Umidità ideale di conservazione:</strong> {productData[2].toLocaleString()} %
                 </p>
               </div>
             </div>
@@ -167,10 +167,10 @@ const HomePage = () => {
                       <strong>Data rilevazione:</strong> {new Date(acquisition.datetime * 1000).toLocaleString()}
                     </div>
                     <div className="mx-3">
-                      <strong>Temperatura registrata:</strong> {acquisition.registeredTemperature.toLocaleString()}
+                      <strong>Temperatura registrata:</strong> {acquisition.registeredTemperature.toLocaleString()} °C
                     </div>
                     <div className="mx-3">
-                      <strong>Umidità registrata:</strong> {acquisition.registeredHumidity.toLocaleString()}
+                      <strong>Umidità registrata:</strong> {acquisition.registeredHumidity.toLocaleString()} %
                     </div>
                     <div>
                       <strong>Problemi durante il trasporto:</strong> {acquisition.hasProblems ? 'Yes' : 'No'}

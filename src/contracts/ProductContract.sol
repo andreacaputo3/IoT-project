@@ -20,22 +20,7 @@ contract ProductContract {
             _idealTemperature,
             _idealHumidity
         );
-    }
-
-    function getProductByName(string memory _productType) public view returns (uint, string memory, uint, uint) {
-        for (uint i = 1; i <= productCount; i++) {
-            //stringhe in Solidity non possono essere confrontate direttamente usando l'operatore di uguaglianza
-            if (keccak256(bytes(products[i].productType)) == keccak256(bytes(_productType))) {
-                return (
-                    products[i].productId,
-                    products[i].productType,
-                    products[i].idealTemperature,
-                    products[i].idealHumidity
-                );
-            }
-        }
-        return (0, "", 0, 0);
-    }
+}
 
     function getProductById(uint _productId) public view returns (string memory productType, uint idealTemperature, uint idealHumidity) {
         // Make sure the transport has a valid id

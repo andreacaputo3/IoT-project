@@ -49,3 +49,11 @@ contract AcquisitionContract {
         return result;
     }
 }
+
+
+
+
+
+
+
+
