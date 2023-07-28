@@ -8,21 +8,30 @@ module.exports = async function(callback) {
         // Definisci i parametri per il nuovo prodotto
         const productId = 1;
         const productType = "Patate";
-        const idealTemperature = 30;
-        const idealHumidity = 50;
+        const idealTemperature = 25;
+        const idealHumidity = 35;
 
-        // Aggiungi il prodotto utilizzando la funzione addProduct del contratto
+        // Stima il gas price
+        const gasPrice = await web3.eth.getGasPrice();
+
+        // Crea l'oggetto della transazione per stimare il gas limit
+        const transactionObject = {
+            from: web3.eth.accounts[0],
+            gasPrice: gasPrice,
+        };
+
+        // Stima il gas limit per la transazione
         await contractInstance.addProduct(productType, idealTemperature, idealHumidity);
+        const gasLimit = await contractInstance.addProduct.estimateGas(productType, idealTemperature, 
+            idealHumidity, transactionObject);
 
-        // Ottieni i dettagli del prodotto appena aggiunto
-        const product = await contractInstance.products(productId);
+        // Calcola il costo totale della transazione
+        const transactionCost = gasPrice * gasLimit;
 
-        // Visualizza i dettagli del prodotto
-        console.log("Product ID:", product.productId.toNumber());
-        console.log("Product Type:", product.productType);
-        console.log("Ideal Temperature:", product.idealTemperature.toNumber());
-        console.log("Ideal Humidity:", product.idealHumidity.toNumber());
-
+        console.log("Gas Price:", gasPrice);
+        console.log("Gas Limit:", gasLimit);
+        console.log("Transaction Cost:", web3.utils.fromWei(transactionCost.toString(), "ether"), "ETH");
+    
     } catch (error) {
         console.error("Error:", error);
     }

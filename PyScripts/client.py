@@ -7,14 +7,13 @@ import time
 def isThereAProblem(ideal, detected):
     upper = ideal + (ideal*0.1)
     lower = ideal - (ideal*0.1)
-    #print("{0} - {1}".format(upper, lower))
     if (detected < lower or detected > upper):
         return True
     else:
         return False
 
 def client_program():
-    host = '192.168.1.51'  # Indirizzo IP del server o 'localhost' se il server è in esecuzione sulla stessa macchina
+    host = '172.20.10.3'  # Indirizzo IP del server o 'localhost' se il server è in esecuzione sulla stessa macchina
     port = 5003  
 
     #Indirizzo del provider (es. Ganache)
@@ -67,12 +66,31 @@ def client_program():
             print(f"Umidità registrata: {registeredHumidity} %")
 
             hasProblems = isThereAProblem(productData[1],registeredTemperature)
-            hasProblems = isThereAProblem(productData[2],registeredHumidity)
+            if (hasProblems == False):
+                hasProblems = isThereAProblem(productData[2],registeredHumidity)
+
+            # gas price
+            gas_price = web3.eth.gas_price
 
             tx_hash = acquisitionContract.functions.addAcquisition(ts,registeredTemperature,registeredHumidity,hasProblems,
             int(transportId)).transact({'from': web3.eth.defaultAccount})
             print("Dati memorizzati...")
 
+            # Ottieni il receipt della transazione
+            transaction_receipt = web3.eth.get_transaction_receipt(tx_hash)
+
+            # Verifica se il receipt è valido (la transazione è stata confermata)
+            if transaction_receipt is not None:
+                # Recupera il gas limit dalla receipt
+                gas_limit = transaction_receipt['gasUsed']
+
+            # Calcola il costo totale della transazione
+            transaction_cost = gas_price * gas_limit
+
+            print("Gas Price:", gas_price)
+            print("Gas Limit:", gas_limit)
+            print("Transaction Cost:", web3.from_wei(transaction_cost, "ether"), "ETH")
+            
             client_socket.close()  # Chiusura della connessione
             time.sleep(60)
 

@@ -1,3 +1,4 @@
+const Web3 = require("web3");
 const TransportContract = artifacts.require("./contracts/TransportContract");
 
 module.exports = async function(callback) {
@@ -6,23 +7,29 @@ module.exports = async function(callback) {
         const contractInstance = await TransportContract.deployed();
 
         // Definisci i parametri per il nuovo trasporto
-        const transportId = 1;
         const departurePlace = "Roma";
         const arrivalPlace = "Milano";
         const productId = 1;
 
+        // Stima il gas price
+        const gasPrice = await web3.eth.getGasPrice();
 
-        // Aggiungi il trasporto utilizzando la funzione addTransport del contratto
-        await contractInstance.addTransport(departurePlace, arrivalPlace, 1);
+        // Crea l'oggetto della transazione per stimare il gas limit
+        const transactionObject = {
+            from: web3.eth.accounts[0],
+            gasPrice: gasPrice,
+        };
 
-        // Ottieni i dettagli del trasporto appena aggiunto
-        const transport = await contractInstance.transports(transportId);
+        // Stima il gas limit per la transazione
+        await contractInstance.addTransport(departurePlace, arrivalPlace, productId);
+        const gasLimit = await contractInstance.addTransport.estimateGas(departurePlace, arrivalPlace, productId, transactionObject);
 
-        // Visualizza i dettagli del trasporto
-        console.log("Transport ID:", transport.transportId.toNumber());
-        console.log("Departure Place:", transport.departurePlace);
-        console.log("Arrival Place:", transport.arrivalPlace);
-        console.log("State:", transport.transportState);
+        // Calcola il costo totale della transazione
+        const transactionCost = gasPrice * gasLimit;
+
+        console.log("Gas Price:", gasPrice);
+        console.log("Gas Limit:", gasLimit);
+        console.log("Transaction Cost:", web3.utils.fromWei(transactionCost.toString(), "ether"), "ETH");
     } catch (error) {
         console.error("Error:", error);
     }
